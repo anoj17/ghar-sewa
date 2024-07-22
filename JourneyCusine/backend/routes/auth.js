@@ -1,5 +1,5 @@
 const express = require("express");
-const { signUp, checkEmail, logIn, refreshToken, postUser, logOut, getUserDetails, userProfileDetails, userProfileAbout, uploadProfileImage, userToHost, addWishlist } = require("../controllers/authController.js");
+const { signUp, checkEmail, logIn, refreshToken, postUser, logOut, getUserDetails, userProfileDetails, userProfileAbout, uploadProfileImage, userToHost, addWishlist, googleLogin } = require("../controllers/authController.js");
 const { verifyJwtToken } = require("../middleware/jwt.js");
 const router = express.Router();
 
@@ -7,6 +7,7 @@ router.use(express.json())
 
 router.post("/sign_up", signUp)
 router.post("/log_in", logIn)
+router.post("/google_login", googleLogin)
 router.post("/logout", verifyJwtToken, logOut)
 router.post("/get_user_details", verifyJwtToken, getUserDetails)
 router.post("/post", verifyJwtToken, postUser)

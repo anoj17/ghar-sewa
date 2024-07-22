@@ -1,9 +1,17 @@
 const User = require("../models/user.model.js");
 const bcrypt = require("bcrypt")
+const express = require("express");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const House = require("../models/house.model.js");
-require('dotenv').config() 
+require('dotenv').config()
+const axios = require("axios")
+var GoogleStrategy = require('passport-google-oauth2').Strategy;
+const passport = require('passport');
+
+const app = express();
+
+app.use(passport.initialize());
 
 const saltRounds = 10
 const daysToSeconds = 1 * 60 * 60; //   days * hours *  minutes *  seconds
@@ -72,12 +80,99 @@ exports.signUp = async (req, res, next) => {
     }
 };
 
+exports.googleLogin = async (req, res) => {
+    // console.log("hello***************",req.body)
+
+    const { token } = req.body;
+
+    try {
+        
+    
+    // Make sure to use the correct endpoint
+    const userInfoResponse = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo', {
+        headers: {
+            Authorization: `Bearer ${token.access_token}`
+        }
+    });
+
+    const existUser = await User.findOne({emailId: userInfoResponse.data.email})
+
+    const findCriteria = {
+        emailId: userInfoResponse.data.email
+    }
+
+    if(!existUser){
+        const user = new User({
+            name: {
+                firstName: userInfoResponse.data.given_name,
+                lastName: userInfoResponse.data.family_name
+            },
+            emailId: userInfoResponse.data.email,
+        //    accessToken: token
+        })
+        console.log(user)
+    
+        await user.save()
+
+        const accessToken = jwt.sign(
+            {
+                _id: user._id,
+                role: user.role
+            },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: expirationTimeInSeconds }
+        )
+        const refreshToken = jwt.sign({ _id: user._id, role: user.role }, process.env.REFRESH_TOKEN_SECRET)
+
+        const updatedUser = await User.findOneAndUpdate(findCriteria, { accessToken: accessToken, refreshToken: refreshToken }, { new: true })
+        let response = {
+            info: "Successfully logged in",
+            success: 1,
+            status: 200,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            user_details: updatedUser
+        }
+        res.send(response);
+    }else{
+        const accessToken = jwt.sign(
+            {
+                _id: existUser._id,
+                role: existUser.role
+            },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: expirationTimeInSeconds }
+        )
+        const refreshToken = jwt.sign({ _id: existUser._id, role: existUser.role }, process.env.REFRESH_TOKEN_SECRET)
+
+        const updatedUser = await User.findOneAndUpdate(findCriteria, { accessToken: accessToken, refreshToken: refreshToken }, { new: true })
+        let response = {
+            info: "Successfully logged in",
+            success: 1,
+            status: 200,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            user_details: updatedUser
+        }
+        res.send(response);
+    }
+
+    
+    // Logging the entire response to see the structure
+    // console.log('User info response:', userInfoResponse.data);
+
+   
+} catch (error) {
+    console.log(error)
+}
+}
+
 exports.logIn = async (req, res) => {
     const payload = req.body;
     const email = payload.email;
     const password = payload.password;
 
-    console.log('login came=======================',payload)
+    console.log('login came=======================', payload)
 
     const findCriteria = {
         emailId: email

@@ -1,7 +1,118 @@
 const mongoose = require("mongoose");
 const User = require("../models/user.model.js");
 const House = require("../models/house.model.js");
+const Reservation = require('../models/reservation.model.js');
+const { Review } = require("../models/review.model.js");
+
 require('dotenv').config()
+
+exports.reviewStatusCheck = async (req, res) => {
+
+    const { id } = req.params
+    const userId = req.user
+    try {
+
+        // find if user has reserved that place
+        const reservation = await Reservation.find({
+            clientId: userId,
+            listingId:id
+        })
+
+        if (reservation.length < 1) {
+            return res.status(200).json({
+                canReview: false,
+                message: 'user cannot review'
+            })
+        }
+        // see if review already exist
+        const oldReview = await Review.findOne({
+            userId, listingId: id
+        })
+
+        if (oldReview) {
+            res.status(200).json({
+                canReview: false,
+                message: 'user cannot review'
+            })
+        } else {
+            res.status(200).json({
+                canReview: true,
+                message: 'user can review'
+            })
+        }
+
+    } catch (error) {
+        console.log('error in review', error)
+        return res.status(500)
+
+    }
+}
+
+exports.getAllReview = async (req, res) => {
+    const { id } = req.params
+    console.log('listingId',id)
+    try {
+        const reviews = await Review.find({
+            listingId: id
+        }).populate('userId')
+        console.log('reviews',reviews)
+        res.json(reviews)
+
+    } catch (error) {
+        console.log('error in review', error)
+        return res.status(500)
+    }
+}
+
+exports.reviewHouse = async (req, res) => {
+    const { rating, review, listingId } = req.body
+    const userId = req.user
+
+
+    try {
+
+        // find if user has reserved that place
+        const reservation = await Reservation.find({
+            clientId: userId,
+            listingId
+        })
+
+        if (reservation.length < 1) {
+            return res.status(400).json({ mesage: 'Cant review unreserved property' })
+        }
+
+        // reservation.forEach((reserv) => {
+
+        // })
+        console.log('userId', userId, listingId)
+
+        // see if review already exist
+        const oldReview = await Review.find({
+            userId, listingId
+        })
+
+        if (oldReview.length > 0) {
+            return res.status(400).json({
+                message: 'Review already submitted'
+            })
+        }
+
+        console.log('reservation', reservation)
+
+        await Review.create({
+            rating, review, userId, listingId
+        })
+
+        return res.status(200).json({
+            message: 'Review submitted'
+        })
+
+    } catch (error) {
+
+        console.log('error in review', error)
+        return res.status(500)
+    }
+}
 
 exports.saveHouseStructure = async (req, res) => {
     try {
@@ -506,19 +617,19 @@ exports.getAllListing = async (req, res) => {
                     }
                 },
                 {
-                    "location.country": {
+                    "location.country.name": {
                         $regex: q,
                         $options: 'i'
                     }
                 },
                 {
-                    "location.city": {
+                    "location.city.name": {
                         $regex: q,
                         $options: 'i'
                     }
                 },
                 {
-                    "location.state": {
+                    "location.state.name": {
                         $regex: q,
                         $options: 'i'
                     }
@@ -541,7 +652,7 @@ exports.getAllListing = async (req, res) => {
                         $options: 'i'
                     }
                 },
-                
+
             ]
         }
     }
