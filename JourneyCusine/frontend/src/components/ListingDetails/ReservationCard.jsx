@@ -12,7 +12,7 @@ import { newReservation } from "../../redux/actions/reservationsActions";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API } from "../../backend";
-import { parseISO, format } from "date-fns";
+import { format } from "date-fns";
 
 /* eslint-disable react/prop-types */
 const ReservationCard = ({ listingData }) => {
@@ -45,55 +45,46 @@ const ReservationCard = ({ listingData }) => {
     listingData?.authorEarnedPrice
   );
 
-  // dates saving and showing to the dateRange calendar calculation here
-  const [selectedDates, setSelectedDates] = useState([
-    {
-      startDate: new Date(),
-      endDate: new Date(),
-      key: "selection",
-    },
-  ]);
+
+  const [checkOutDate, setCheckOutDate] = useState(new Date)
+
+
+ 
 
   const [startDate, setStartDate] = useState(new Date)
   const [endDate, setEndDate] = useState(new Date)
 
+
   const [showStartDate, setShowStartDate] = useState(false)
   const [showEndDate, setShowEndDate] = useState(false)
 
-  const [selectedDateRange, setSelectedDateRange] = useState([
-    {
-      startDate: new Date(),
-      endDate: new Date(),
-      key: "selection",
-    },
-  ])
+
+  useEffect(() => {
+    if (listingData?.checkOutDate) {
+      let checkOutDateTest = new Date(listingData?.checkOutDate);
+      checkOutDateTest.setDate(checkOutDateTest.getDate() + 1);
+      setCheckOutDate(checkOutDateTest)
+      setStartDate(checkOutDateTest)
+      setEndDate(checkOutDateTest)
+    } else {
+      setStartDate(new Date)
+      setEndDate(new Date)
+    }
+
+  }, [listingData])
+
 
   // calculating how many nights guest is staying
   const [nightsStaying, setNightStaying] = useState(1);
 
-  console.log(nightsStaying, typeof nightsStaying, "nights");
 
-  // formatted dates to save in the db
-  const formattedStartDate = selectedDates[0]?.startDate?.toISOString();
-  const formattedEndDate = selectedDates[0]?.endDate?.toISOString();
 
-  // local dates from fromatted date to show in the ui
-  const localStartDate = new Date(formattedStartDate).toLocaleDateString();
-  const localEndDate = new Date(formattedEndDate).toLocaleDateString();
 
-  console.log(
-    new Date(formattedStartDate).toLocaleDateString(),
-    localStartDate,
-    localEndDate,
-    "dates"
-  );
+
   // Function to handle date selection
   const handleSelect = (date) => {
 
-    console.log('ranges', date)
 
-    // console.log('selected ========date', ranges.selection.endDate.toISOString())
-    // const formatted = new Date(ranges.selection.startDate.toISOString()).toLocaleDateString();
 
     if (showStartDate) {
 
@@ -102,9 +93,7 @@ const ReservationCard = ({ listingData }) => {
       setEndDate(date)
     }
 
-    // setSelectedDateRange([ranges.selection])
 
-    // setSelectedDates([ranges.selection]);
   };
 
   // booking function
@@ -113,7 +102,7 @@ const ReservationCard = ({ listingData }) => {
   console.log(orderId);
   const handleBooking = () => {
     navigate(
-      `/book/stays/${listingData._id}?numberOfGuests=${totalGuest}&nightStaying=${nightsStaying}&checkin=${formattedStartDate}&checkout=${formattedEndDate}&orderId=${orderId}`
+      `/book/stays/${listingData._id}?numberOfGuests=${totalGuest}&nightStaying=${nightsStaying}&checkin=${startDate}&checkout=${endDate}&orderId=${orderId}`
     );
   };
 
@@ -127,7 +116,7 @@ const ReservationCard = ({ listingData }) => {
       if (res.status === 200) {
         setReservations(res.data);
       }
-      console.log(res, "reservation data");
+      console.log("reservation data", res.data,);
     })();
   }, [listingData?._id]);
 
@@ -150,11 +139,11 @@ const ReservationCard = ({ listingData }) => {
       calculatedBasePrice - Math.round((calculatedBasePrice * 3) / 100);
 
     // setting states
-    setReservationBasePrice(parseInt( calculatedBasePrice));
+    setReservationBasePrice(parseInt(calculatedBasePrice));
     setTax(calculatingTaxes);
     setAuthorEarned(calculateAuthorEarned);
     setNightStaying(calculatedNights);
-  }, [selectedDates, listingData?.basePrice, startDate, endDate]);
+  }, [listingData?.basePrice, startDate, endDate]);
 
   useEffect(() => {
     setTotalGuest(guestsNumber + childrenNumber);
@@ -165,7 +154,7 @@ const ReservationCard = ({ listingData }) => {
     const data = {
       listingData,
       formattedStartDate: startDate,
-      formattedEndDate:endDate,
+      formattedEndDate: endDate,
       nightsStaying,
       totalGuest,
       reservationBasePrice,
@@ -176,8 +165,8 @@ const ReservationCard = ({ listingData }) => {
   }, [
     dispatch,
     listingData,
-    formattedStartDate,
-    formattedEndDate,
+    startDate,
+    endDate,
     nightsStaying,
     totalGuest,
     reservationBasePrice,
@@ -185,29 +174,9 @@ const ReservationCard = ({ listingData }) => {
     authorEarned,
   ]);
 
-  // Calculate the disabled date ranges for each object
-  const disabledDateRanges = reservations?.map((obj) => ({
-    startDate: parseISO(obj.checkIn),
-    endDate: parseISO(obj.checkOut),
-  }));
 
-  console.log(disabledDateRanges);
 
-  console.log('startDate', startDate, 'endDate', endDate)
 
-  // Generate an array of individual dates within disabledDateRanges
-  const disabledDates = disabledDateRanges.reduce((dates, range) => {
-    const startDate = new Date(range.startDate);
-    const endDate = new Date(range.endDate);
-    const currentDate = new Date(startDate);
-
-    while (currentDate <= endDate) {
-      dates.push(new Date(currentDate));
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    return dates;
-  }, []);
 
   return (
     <>
@@ -243,7 +212,6 @@ const ReservationCard = ({ listingData }) => {
                 className=" grid grid-cols-2 cursor-pointer"
               >
                 <div className="px-3 py-3"
-
                   onClick={() => {
                     setShowEndDate(false)
                     setShowStartDate(true)
@@ -419,24 +387,12 @@ const ReservationCard = ({ listingData }) => {
               ref={calendarRef}
               className=" absolute border-b-[1.2px] border-neutral-200 shadow-md left-[2px] sm:translate-x-[30%] sm:translate-y-[0%] md:translate-x-[-30%] lg:translate-x-[-20%] xl:translate-x-0 xl:translate-y-0"
             >
-              {/* <DateRange
-                rangeColors={["#262626"]}
-                date={showStartDate ? startDate : endDate || new Date()}
-                editableDateInputs={true}
-                onChange={handleSelect}
-                moveRangeOnFirstSelection={false}
-                ranges={selectedDateRange}
-                disabledDates={disabledDates}
-                isDayBlocked={(date) => isDateDisabled(date)}
-                direction="vertical"
-                showDateDisplay={false}
-                minDate={showStartDate ? new Date() : startDate || new Date()}
-              /> */}
+
 
               <Calendar
                 date={showStartDate ? startDate : endDate || new Date()}
                 onChange={handleSelect}
-                minDate={showStartDate ? new Date() : startDate || new Date()}
+                minDate={showStartDate ? checkOutDate : startDate || new Date()}
 
               />
             </div>

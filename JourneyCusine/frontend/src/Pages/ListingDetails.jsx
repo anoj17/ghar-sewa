@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getOneListingRoomsDetails } from "../redux/actions/houseActions";
 import ListingDetailsPageSkeleton from "../components/skeletonLoading/ListingDetailsPageSkeleton";
+import { getUser } from "../redux/actions/userActions";
 
 const ListingDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -20,6 +21,7 @@ const ListingDetails = () => {
   const listedAuthor = data?.listingAuthor;
 
   useEffect(() => {
+    dispatch(getUser())
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 

@@ -71,13 +71,9 @@ export const removeFromWishlist = (data) => async (dispatch) => {
 export const getUser = () => async (dispatch, getState) => {
     const { userDetails } = getState().user;
 
-    if (userDetails) {
-        return;
-    }
-
     try {
         const response = await api.post("/auth/get_user_details");
-        console.log(response.data, "GET USER DETAILS");
+        console.log(response.data?.user_details, "GET USER DETAILS");
         if (response.data.status === 200) {
             // saving user details from db
             dispatch({
@@ -94,7 +90,7 @@ export const getUser = () => async (dispatch, getState) => {
         }
     } catch (error) {
         // Handle error
-        console.log(error)
+        console.log('error fetching user data',error)
     }
 };
 

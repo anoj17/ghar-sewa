@@ -2,6 +2,7 @@ import ListingDescriptionPopup from "../popUp/ListingDescriptionPopup";
 import Map from "../../components/Map";
 import { amenities } from "./amenitiesApi";
 import { AiOutlineRight } from "react-icons/ai";
+import Review from "./Review";
 
 /* eslint-disable react/prop-types */
 const ListingDescriptions = ({ listingData, author }) => {
@@ -94,6 +95,11 @@ const ListingDescriptions = ({ listingData, author }) => {
           )}
         </div>
       </div>
+      <h2 className="text-[22px] text-[#222222] font-medium">
+        Reviews
+      </h2>
+      <Review listingId={listingData._id} />
+
 
       {/* reviews section */}
       {/* {listingData?.review ? <></> : <></>} */}

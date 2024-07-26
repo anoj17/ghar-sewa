@@ -22,6 +22,7 @@ const AuthenticationPopUp = ({ popup, setPopup }) => {
     setShowLoginPopup(false);
     setShowCreateUserPopup(false);
     setDefaultPopup(true);
+    setPopup(false)
   };
 
   useEffect(() => {
@@ -100,6 +101,7 @@ const AuthenticationPopUp = ({ popup, setPopup }) => {
                   setShowLoginPopup={setShowLoginPopup}
                   setShowCreateUserPopup={setShowCreateUserPopup}
                   setLoginEmail={setLoginEmail}
+                  handleCloseLoginPopup={handleCloseLoginPopup}
                 />
               )}
               {!showLoginPopup ? null : (

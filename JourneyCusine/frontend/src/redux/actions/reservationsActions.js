@@ -39,7 +39,7 @@ export const getClientReservations = () => async (dispatch) => {
 
         if (response.status === 200) {
             dispatch({
-                type: "AUTHORS_RESERVATIONS",
+                type: "CLIENT_RESERVATIONS",
                 payload: response.data,
             })
         }

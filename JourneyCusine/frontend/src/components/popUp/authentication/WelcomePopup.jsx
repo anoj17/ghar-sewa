@@ -7,9 +7,13 @@ import { Link } from "react-router-dom";
 import { API } from "../../../backend";
 import { PulseLoader } from "react-spinners";
 // import google from "../../assets/basicIcon/google.svg";
-import facebook from "../../../assets/basicIcon/facebook.svg";
+import google from "../../../assets/basicIcon/google.svg";
+import { useGoogleLogin } from '@react-oauth/google';
+import { userLogIn } from "../../../redux/actions/userActions";
+import { useDispatch } from "react-redux";
 
 const WelcomePopup = ({
+  handleCloseLoginPopup,
   setDefaultPopup,
   setShowLoginPopup,
   setShowCreateUserPopup,
@@ -19,6 +23,8 @@ const WelcomePopup = ({
   const { handleSubmit, register, reset } = useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const dispatch = useDispatch()
 
   const handleInputFocus = () => {
     setInputFocused(true);
@@ -64,49 +70,70 @@ const WelcomePopup = ({
     }
   };
 
-  const handleFacebookLogin = () => {
-    // Loading the Facebook SDK asynchronously
-    window.fbAsyncInit = function () {
-      window.FB.init({
-        appId: "1025897438850966",
-        cookie: true,
-        xfbml: true,
-        version: "v13.0",
-      });
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      console.log('Google login successful:', tokenResponse);
 
-      // Check login status
-      window.FB.getLoginStatus(function (response) {
-        if (response.status === "connected") {
-          // User is logged in and authenticated
-          setIsLoggedIn(true);
-        } else {
-          // User is not logged in or not authenticated
-          // Prompt the user to log in with Facebook
-          window.FB.login(function (response) {
-            if (response.authResponse) {
-              // User successfully logged in and authenticated
-              setIsLoggedIn(true);
-            } else {
-              // User canceled the login or didn't authorize the app
-              setIsLoggedIn(false);
-            }
-          });
+      try {
+        const response = await axios.post(`${API}auth/google_login`, {
+          token: tokenResponse
+        });
+
+        // Check if the email is a Gmail address
+        const userData = response.data;
+        setIsLoading(false);
+
+        if (userData?.success === 0) {
+          setShowErrorMessage(true);
+        } else if (userData?.success === 1) {
+          dispatch(userLogIn(userData));
+          let accessToken = localStorage.getItem("accessToken");
+          let refreshToken = localStorage.getItem("refreshToken");
+
+          if (!accessToken) {
+            localStorage.setItem(
+              "accessToken",
+              JSON.stringify(userData?.accessToken)
+            );
+          } else if (accessToken) {
+            accessToken = userData?.accessToken;
+            localStorage.setItem("accessToken", JSON.stringify(accessToken));
+          }
+          if (!refreshToken) {
+            localStorage.setItem(
+              "refreshToken",
+              JSON.stringify(userData?.refreshToken)
+            );
+          } else if (refreshToken) {
+            refreshToken = userData?.refreshToken;
+            console.log(refreshToken);
+            localStorage.setItem("refreshToken", JSON.stringify(refreshToken));
+          }
+          // window.location.reload();
+          // setDefaultPopup(false);
+          // setShowLoginPopup(false);
+          // setShowCreateUserPopup(false)
+          // setPopup(false);
+          handleCloseLoginPopup()
         }
-      });
-    };
+      } catch (error) {
+        console.log(error);
+        setIsLoading(false);
+        toast.warn("Network error try again!");
+      } finally {
+        setIsLoading(false);
+      }
 
-    // Load the Facebook SDK script
-    (function (d, s, id) {
-      var js,
-        fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s);
-      js.id = id;
-      js.src =
-        "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v13.0&appId=1025897438850966&autoLogAppEvents=1";
-      fjs.parentNode.insertBefore(js, fjs);
-    })(document, "script", "facebook-jssdk");
-  };
+      // Handle the token response, e.g., send it to your backend for verification
+      console.log('Token response from backend:', response.data);
+
+    },
+    onError: () => {
+      console.log('Google login failed');
+      // Handle error scenarios, e.g., show error message to user
+    },
+  });
+
 
   return (
     <div className="flex flex-col gap-4">
@@ -119,9 +146,8 @@ const WelcomePopup = ({
           <input
             type="email"
             placeholder="Email"
-            className={`w-full border-[1.5px] border-[#dddddd] p-3 rounded-lg mt-4 ${
-              inputFocused ? "placeholder-shrink" : "placeholder-restore"
-            }`}
+            className={`w-full border-[1.5px] border-[#dddddd] p-3 rounded-lg mt-4 ${inputFocused ? "placeholder-shrink" : "placeholder-restore"
+              }`}
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
             {...register("email", {
@@ -140,9 +166,8 @@ const WelcomePopup = ({
             <Link className=" font-semibold underline">Privacy Policy</Link>
           </p>
           <button
-            className={`bg-[#ff385c] hover:bg-[#d90b63] transition-all duration-300 text-white font-medium rounded-lg p-3 w-full disabled:bg-[#dddddd] ${
-              isLoading ? " cursor-not-allowed" : ""
-            }`}
+            className={`bg-[#ff385c] hover:bg-[#d90b63] transition-all duration-300 text-white font-medium rounded-lg p-3 w-full disabled:bg-[#dddddd] ${isLoading ? " cursor-not-allowed" : ""
+              }`}
             type="submit"
             disabled={isLoading}
           >
@@ -169,11 +194,11 @@ const WelcomePopup = ({
       <div className=" flex flex-col gap-4 px-8 pb-7">
         <div
           className=" w-full flex flex-row items-center border border-[#222222] rounded-lg py-[10px] bg-[#ffffff] hover:bg-[#f7f7f7] transition-colors cursor-pointer"
-          onClick={handleFacebookLogin}
+          onClick={handleGoogleLogin}
         >
-          <img src={facebook} alt="Log in with facebook" className="w-6 ml-5" />
+          <img src={google} alt="Log in with facebook" className="w-6 ml-5" />
           <p className="text-sm mx-auto font-medium text-[#222222]">
-            Continue with Facebook
+            Continue with Google
           </p>
         </div>
       </div>

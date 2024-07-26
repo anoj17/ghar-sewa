@@ -44,17 +44,14 @@ const Navbar = () => {
   const dispatch = useDispatch();
 
 
-  useEffect(() => {
-
-
-
-  }, [search])
-
+ 
 
   const handleLogout = () => {
     dispatch(userLogOut());
   };
 
+console.log('reserv at nav==================',user)
+  
   useEffect(() => {
     dispatch(getAllWishList())
     dispatch(getUser());
@@ -115,7 +112,7 @@ const Navbar = () => {
             />
             {/* if user is in hosting homes page we want only logo */}
             {inHostHomesLandingPage || isSmallDevice ? null : (
-              <p className="text-xl text-[#ff385c] font-bold">JourneyCuisin</p>
+              <p className="text-xl text-[#ff385c] font-bold">GharSewa</p>
             )}
           </span>
         </div>
@@ -286,13 +283,13 @@ const Navbar = () => {
                               >
                                 Dashboard
                               </Link>
-                              <Link className="font-medium">Notifications</Link>
+                              {/* <Link className="font-medium">Notifications</Link> */}
                             </>
                           )}
-                          <Link className="font-medium">Trips</Link>
+                          {/* <Link className="font-medium">Trips</Link> */}
                           <Link className="font-medium" to={`/users/${user?._id}/reservations`}>Rerservations</Link>
 
-                          <Link className="font-medium">Wishlists</Link>
+                          {/* <Link className="font-medium">Wishlists</Link> */}
                           <hr className="h-[1.5px] bg-[#dddddd] my-1" />
                           <Link to={"/host/homes"}>Motel your home</Link>
                           <Link to={`/users/show/${user._id}`}>Account</Link>

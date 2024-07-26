@@ -33,7 +33,7 @@ const Home = () => {
   // });
   const allListingData = useSelector(state => state.house.allListing)
 
-  console.log('lisitng data=======================',allListingData)
+  // console.log('lisitng data=======================',allListingData)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -132,7 +132,6 @@ const Home = () => {
                       // this will be link to see full details of the listing
                       <Link
                         to={`/rooms/${listing?._id}`}
-                        onClick={() => console.log('preview One')}
                         key={listing._id}
                         className=" flex flex-col gap-3 rounded-xl w-full sm:max-w-[300px] md:w-full mx-auto"
                       >

@@ -1,6 +1,8 @@
 const initialState = {
     newReservationsData: null,
-    authorReservations: []
+    authorReservations: [],
+    clientReservations: []
+
 }
 
 const reservationsReducer = (state = initialState, { type, payload }) => {
@@ -12,6 +14,12 @@ const reservationsReducer = (state = initialState, { type, payload }) => {
             }
         }
         case "AUTHORS_RESERVATIONS": {
+            return {
+                ...state,
+                authorReservations: payload
+            }
+        }
+        case "CLIENT_RESERVATIONS": {
             return {
                 ...state,
                 authorReservations: payload
