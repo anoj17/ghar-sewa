@@ -11,6 +11,7 @@ import google from "../../../assets/basicIcon/google.svg";
 import { useGoogleLogin } from '@react-oauth/google';
 import { userLogIn } from "../../../redux/actions/userActions";
 import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
 
 const WelcomePopup = ({
   handleCloseLoginPopup,
@@ -20,9 +21,13 @@ const WelcomePopup = ({
   setLoginEmail,
 }) => {
   const [inputFocused, setInputFocused] = useState(false);
-  const { handleSubmit, register, reset } = useForm();
+  const { handleSubmit, register, reset, formState: { errors }  } = useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const showErrorToast = (message) => {
+    toast.error(message);
+  };
 
   const dispatch = useDispatch()
 
@@ -152,9 +157,14 @@ const WelcomePopup = ({
             onBlur={handleInputBlur}
             {...register("email", {
               required: true,
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
+                message: 'Please enter a valid Gmail address',
+              },
               onBlur: handleInputBlur,
             })}
           />
+          {errors.email && showErrorToast(errors.email.message)}
           <div className=" pt-4 px-8 italic">
             <ul className=" list-disc text-xs text-[#222222] opacity-80">
               <p>You can use below test credentials to login!</p>
