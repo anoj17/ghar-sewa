@@ -145,7 +145,7 @@ const WelcomePopup = ({
       {/* welcome option */}
       <div className="px-8 pt-4">
         <h2 className="font-medium text-[22px] text-[#222222]">
-          Welcome to Motel
+          Welcome to Gharsewa
         </h2>
         <form onSubmit={handleSubmit(handleCheckEmail)}>
           <input

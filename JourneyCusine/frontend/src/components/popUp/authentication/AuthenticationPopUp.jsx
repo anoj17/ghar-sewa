@@ -47,14 +47,14 @@ const AuthenticationPopUp = ({ popup, setPopup }) => {
         <div className=" absolute inset-0 w-screen h-screen bg-[#0000005c] popup__overlay">
           <div
             ref={popUpRef}
-            className={`absolute left-[27.5%] right-[27.5%] top-[12%] ${
+            className={`absolute left-[7.5%] right-[27.5%] top-[12%] ${
               (showLoginPopup || profilePopup) && !showErrorMessage
                 ? " h-[60vh] popup__container__login"
                 : (showLoginPopup || profilePopup) && showErrorMessage
                 ? "h-[80vh]"
                 : "h-[80vh] popup__container"
-            } w-[45vw] bg-[#ffffff] shadow-2xl rounded-xl overflow-hidden`}
-            style={{height:'65vh', width: '40vh', left:'calc(50% - (20vh) + 5px)'}}
+            } w-[50vw] bg-[#ffffff] shadow-2xl rounded-xl overflow-hidden`}
+            style={{height:'65vh', width: '47vh', left:'calc(50% - (20vh) + 5px)'}}
           >
             {/* pop-up navbar */}
             <div className=" flex items-center w-full py-4 border-b-[1px] px-8 sticky top-0 bg-[#ffffff]">

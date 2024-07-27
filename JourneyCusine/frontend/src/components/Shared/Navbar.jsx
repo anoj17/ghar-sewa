@@ -235,7 +235,7 @@ console.log('reserv at nav==================',user)
                             Login
                           </Link>
                           <hr className="h-[1.5px] bg-[#dddddd] my-1" />
-                          <Link>Motel your home</Link>
+                          <Link>GharSewa your home</Link>
                           <Link>Help</Link>
                         </div>
                       ) : (
