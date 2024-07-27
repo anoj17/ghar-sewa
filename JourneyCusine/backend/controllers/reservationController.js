@@ -36,12 +36,19 @@ exports.createPaymentIntent = async (req, res) => {
             payment_method_types: ['card'],
         });
 
+        // send to ghardhani
+        // await stripe.transfers.create({
+        //     amount: 1099,
+        //     currency: 'usd',
+        //     destination: 'acct_1Ph2tt2Kl8wV5lCD'
+        // });
+
         // Send publishable key and PaymentIntent details to client
         res.send({
             clientSecret: paymentIntent.client_secret,
         });
     } catch (e) {
-        console.log('error occured',e)
+        console.log('error occured', e)
         return res.status(400).send({
             error: {
                 message: e.message,
@@ -69,7 +76,7 @@ exports.newReservation = async (req, res) => {
 
         const listingDetails = await House.findById(findCriteria)
 
-      
+
 
         const basePrice = parseInt(listingDetails.basePrice);
         const tax = Math.round((parseInt(basePrice) * 14) / 100)

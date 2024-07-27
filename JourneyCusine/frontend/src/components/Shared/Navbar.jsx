@@ -29,6 +29,7 @@ const Navbar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState('')
 
+  const dispatch = useDispatch();
 
 
   useEffect(() => {
@@ -40,8 +41,9 @@ const Navbar = () => {
   const [popup, setPopup] = useState(false);
 
   console.log('isauth=================', isAuthenticated)
+  console.log('isDetails=================', user)
 
-  const dispatch = useDispatch();
+
 
 
  
@@ -50,12 +52,12 @@ const Navbar = () => {
     dispatch(userLogOut());
   };
 
-console.log('reserv at nav==================',user)
+  const hasAccesToken = localStorage.getItem('accessToken')
   
   useEffect(() => {
     dispatch(getAllWishList())
     dispatch(getUser());
-  }, []);
+  }, [pathName]);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {

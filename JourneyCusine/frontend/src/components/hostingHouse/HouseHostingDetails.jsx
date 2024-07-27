@@ -34,7 +34,7 @@ const HouseHostingDetails = ({ setLatAndLong }) => {
       <div className=" flex flex-col gap-3 md:gap-5 md:mx-6">
         {/* heading */}
         <div className=" flex flex-col gap-2 text-[#222222] font-medium text-2xl md:text-5xl text-center">
-          <h1 className=" text-[#ff385c]"> Motel it.</h1>
+          <h1 className=" text-[#ff385c]"> GharSewa it.</h1>
           <h1>You could earn</h1>
         </div>
         {/* amount in $ */}

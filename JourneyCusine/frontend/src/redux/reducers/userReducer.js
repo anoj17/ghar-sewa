@@ -41,6 +41,7 @@ const userReducer = (state = initialState, { type, payload }) => {
         case "USER_WISHLIST":
             console.log('in redux payload================',payload)
             return {
+                ...state,
                 wishlist: payload
             }
 

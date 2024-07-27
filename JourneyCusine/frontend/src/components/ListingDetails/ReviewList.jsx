@@ -14,7 +14,7 @@ const ReviewCard = ({ review }) => {
 }
 
 const ReviewList = ({listingId}) => {
-    const { data, isLoading } = useQuery({
+    const { data, isLoading,isSuccess } = useQuery({
         queryKey: ['reviews'],
         queryFn: async () => {
             const res = await api.get(`/house/review/${listingId}`)
@@ -23,16 +23,17 @@ const ReviewList = ({listingId}) => {
     })
     return (
         <>
+
         <h2>
 
-          {data?.length < 1 && 'No review yet.'}
+          {/* {data?.length < 1 && 'No review yet.'} */}
 
         </h2>
-            <div className='flex flex-col jus '>
-                {data && data?.map((review) => (
+            {/* <div className='flex flex-col jus '>
+                {isSuccess && data?.map((review) => (
                     <ReviewCard review={review} key={review._id} />
                 ))}
-            </div>
+            </div> */}
         </>
 
     )

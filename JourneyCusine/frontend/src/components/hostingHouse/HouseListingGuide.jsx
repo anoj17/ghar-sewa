@@ -5,7 +5,7 @@ const HouseListingGuide = () => {
   return (
     <section className=" my-8 md:my-20 flex flex-col gap-10">
       <h1 className=" text-2xl md:text-4xl text-[#222222] font-medium text-center">
-        Motel it easily with Motel Setup
+        GharSewa it easily with GharSewa Setup
       </h1>
       <>
         <img src={bgImage} alt="background" />
@@ -20,11 +20,11 @@ const HouseListingGuide = () => {
         <SetupCard
           heading={"An experienced guest for your first booking"}
           subHeading={
-            "For your first booking, you can choose to welcome an experienced guest who has at least three stays and a good track record on Motel."
+            "For your first booking, you can choose to welcome an experienced guest who has at least three stays and a good track record on Gharsewa."
           }
         />
         <SetupCard
-          heading={"Specialized support from Motel"}
+          heading={"Specialized support from GharSewa"}
           subHeading={
             "New Hosts get one-tap access to specially trained Community Support agents who can help with everything from account issues to billing support."
           }

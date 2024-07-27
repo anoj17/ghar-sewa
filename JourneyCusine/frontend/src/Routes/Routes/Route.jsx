@@ -14,6 +14,7 @@ import ListHouseStepOne from "../../Pages/ListingHouseStepOne/ListHouseStepOne";
 import ListHouseStepOneStructure from "../../Pages/ListingHouseStepOne/ListHouseStepOneStructure";
 import ListHouseStepOnePlacetype from "../../Pages/ListingHouseStepOne/ListHouseStepOnePlacetype";
 import { FadeLoader } from "react-spinners";
+import { ReviewPage } from "../../components/dashboard/reservations/AllReservations";
 // import ListingHouseStepOneAddress from "../../Pages/ListingHouseStepOne/ListingHouseStepOneAddress";
 // import ListingHouseStepOneFloorPlan from "../../Pages/ListingHouseStepOne/ListingHouseStepOneFloorPlan";
 // import StepTwoOverview from "../../Pages/ListingHouseStepTwo/StepTwoOverview";
@@ -139,6 +140,10 @@ const router = createBrowserRouter([
       {
         path: "/users/:id/reservations",
         element: <Reservations />,
+      },
+      {
+        path: "/users/:id/reviews",
+        element: <ReviewPage />,
       },
       {
         path: "/users/dashboard/:id/listing=true",

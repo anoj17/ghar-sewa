@@ -95,10 +95,10 @@ const ListingDescriptions = ({ listingData, author }) => {
           )}
         </div>
       </div>
-      <h2 className="text-[22px] text-[#222222] font-medium">
+      {/* <h2 className="text-[22px] text-[#222222] font-medium">
         Reviews
-      </h2>
-      <Review listingId={listingData._id} />
+      </h2> */}
+      {/* <Review listingId={listingData._id} /> */}
 
 
       {/* reviews section */}

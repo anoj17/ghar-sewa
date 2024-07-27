@@ -12,34 +12,37 @@ exports.reviewStatusCheck = async (req, res) => {
     const userId = req.user
     try {
 
-        // find if user has reserved that place
-        const reservation = await Reservation.find({
-            clientId: userId,
-            listingId:id
-        })
-
-        if (reservation.length < 1) {
-            return res.status(200).json({
-                canReview: false,
-                message: 'user cannot review'
-            })
-        }
         // see if review already exist
         const oldReview = await Review.findOne({
             userId, listingId: id
         })
 
         if (oldReview) {
-            res.status(200).json({
+            return res.status(200).json({
                 canReview: false,
-                message: 'user cannot review'
-            })
-        } else {
-            res.status(200).json({
-                canReview: true,
-                message: 'user can review'
+                message: 'user cannot review',
+         
             })
         }
+
+        // find if user has reserved that place
+        const reservation = await Reservation.find({
+            clientId: userId,
+        })
+
+        if (reservation.find((reserv) => reserv.listingId == id)) {
+            return res.status(200).json({
+                canReview: false,
+                message: 'user cannot review, user doesnt have reservation, ',
+                id,
+                userId, reservation
+            })
+        }
+
+      
+            return res.status(200).json({
+                canReview: true,
+            })
 
     } catch (error) {
         console.log('error in review', error)
@@ -50,12 +53,12 @@ exports.reviewStatusCheck = async (req, res) => {
 
 exports.getAllReview = async (req, res) => {
     const { id } = req.params
-    console.log('listingId',id)
+    console.log('listingId', id)
     try {
         const reviews = await Review.find({
             listingId: id
         }).populate('userId')
-        console.log('reviews',reviews)
+        console.log('reviews', reviews)
         res.json(reviews)
 
     } catch (error) {
@@ -70,34 +73,6 @@ exports.reviewHouse = async (req, res) => {
 
 
     try {
-
-        // find if user has reserved that place
-        const reservation = await Reservation.find({
-            clientId: userId,
-            listingId
-        })
-
-        if (reservation.length < 1) {
-            return res.status(400).json({ mesage: 'Cant review unreserved property' })
-        }
-
-        // reservation.forEach((reserv) => {
-
-        // })
-        console.log('userId', userId, listingId)
-
-        // see if review already exist
-        const oldReview = await Review.find({
-            userId, listingId
-        })
-
-        if (oldReview.length > 0) {
-            return res.status(400).json({
-                message: 'Review already submitted'
-            })
-        }
-
-        console.log('reservation', reservation)
 
         await Review.create({
             rating, review, userId, listingId
