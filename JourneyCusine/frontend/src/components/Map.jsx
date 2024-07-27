@@ -31,7 +31,7 @@ const Map = ({ latAndLong, zoom }) => {
         icon={customIcon}
       >
         <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
+        A pretty CSS3 popup. <br /> Easily customizable.
         </Popup>
       </Marker>
     </MapContainer>
