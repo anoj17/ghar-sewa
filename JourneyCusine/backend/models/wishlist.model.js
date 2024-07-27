@@ -12,3 +12,5 @@ const wishlistSchema = new Schema({
 })
 
 exports.Wishlist = model('Wishlist', wishlistSchema)
+
+//wishlist

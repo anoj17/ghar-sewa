@@ -102,7 +102,7 @@ exports.saveHouseStructure = async (req, res) => {
         const userDetails = await User.findById(findCriteria);
         // console.log(userDetails)
         if (userDetails.role !== "host") {
-            throw Error("User is not a host")
+            throw Error("user is not a host")
         }
 
         let houseTypeData = {
